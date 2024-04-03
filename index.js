@@ -103,7 +103,7 @@ app.delete('/api/persons/:id', (req, res) => {
         console.log('404');
         return res.status(404).end();
     }
-    
+
     console.log('deletion successful');
     res.status(204).end();
 });
