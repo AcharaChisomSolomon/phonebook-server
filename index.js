@@ -26,7 +26,9 @@ const persons = [
 ];
 
 
-app.get('/api/persons', (req, res) => { });
+app.get('/api/persons', (req, res) => {
+    res.json(persons);
+ });
 
 
 const PORT = 3001
