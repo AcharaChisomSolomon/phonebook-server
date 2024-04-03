@@ -43,11 +43,6 @@ app.use(
 );
 
 
-const generateId = () => {
-    return Math.ceil(Math.random() * 1000000);
-};
-
-
 app.post('/api/persons', (req, res) => { 
     const body = req.body;
     if (!body.name || !body.number) {
@@ -56,33 +51,25 @@ app.post('/api/persons', (req, res) => {
             error: 'name or number missing' 
         });
     }
-    if (persons.find(person => person.name === body.name)) {
-        console.log('name must be unique');
-        return res.status(400).json({ 
-            error: 'name must be unique' 
-        });
-    }
-    const person = {
-        id: generateId(),
+
+    const person = new Person({
         name: body.name,
-        number: body.number
-    };
-    persons = persons.concat(person);
-    console.log('new person added', person);
-    res.json(person);
+        number: body.number,
+    });
+    person.save().then((savedPerson) => {
+        res.json(savedPerson);
+    });
 
 });
 
-app.get('/api/persons/:id', (req, res) => { 
-    const id = Number(req.params.id);
-    const person = persons.find(person => person.id === id);
-    if (person) {
-        console.log(person);
-        res.json(person);
-    } else {
-        console.log('404');
-        res.status(404).end();
-    }
+app.get('/api/persons/:id', (req, res) => {
+    Person.findById(req.params.id).then((person) => {
+        if (person) {
+            res.json(person);
+        } else {
+            res.status(404).end();
+        }
+    });
 });
 
 app.get('/api/persons', (req, res) => {
