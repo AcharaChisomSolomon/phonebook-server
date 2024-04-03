@@ -83,8 +83,9 @@ app.get('/api/persons', (req, res) => {
  
 app.get('/info', (req, res) => { 
     const date = new Date();
-    console.log('info returned');
-    res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`);
+    Person.find({}).then((persons) => {
+        res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`);
+    });
 });
 
 app.delete('/api/persons/:id', (req, res) => { 
@@ -95,6 +96,11 @@ app.delete('/api/persons/:id', (req, res) => {
         .catch((error) => next(error));
 });
 
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
+app.use(unknownEndpoint);
 
 app.use(errorHandler);
 
