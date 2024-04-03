@@ -4,18 +4,6 @@ const cors = require('cors');
 const app = express();
 
 
-app.use(express.json());
-app.use(cors());
-
-morgan.token("body", function (req, res) {
-  return JSON.stringify(req.body);
-});
-
-app.use(
-  morgan(":method :url :status :res[content-length] - :response-time ms :body")
-);
-
-
 let persons = [
   {
     id: 1,
@@ -38,6 +26,19 @@ let persons = [
     number: "39-23-6423122",
   },
 ];
+
+
+app.use(express.static("dist"));
+app.use(express.json());
+app.use(cors());
+
+morgan.token("body", function (req, res) {
+  return JSON.stringify(req.body);
+});
+
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
 
 
 const generateId = () => {
@@ -95,7 +96,14 @@ app.get('/info', (req, res) => {
 
 app.delete('/api/persons/:id', (req, res) => { 
     const id = Number(req.params.id);
+    const person = persons.find(person => person.id === id);
     persons = persons.filter(person => person.id !== id);
+    
+    if (!person) {
+        console.log('404');
+        return res.status(404).end();
+    }
+    
     console.log('deletion successful');
     res.status(204).end();
 });
